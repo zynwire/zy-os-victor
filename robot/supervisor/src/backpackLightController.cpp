@@ -115,11 +115,11 @@ namespace BackpackLightController {
           color = 0x80808000;
       } else {
         if(i == 0) {
-          color = 0x80ff0000; // red for back led
+          color = 0x80B4BEFE; // red for back led
         } else if(i == 1) {
-          color = 0x8000ff00; // green for middle led
+          color = 0x808A94D8; // green for middle led
         } else if(i == 2) {
-          color = 0x800000ff; // blue for top led
+          color = 0x80424688; // blue for top led
         } else {
           color = 0x80808000; // fallback color
         }
