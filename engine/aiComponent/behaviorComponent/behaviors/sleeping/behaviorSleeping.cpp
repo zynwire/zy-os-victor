@@ -117,6 +117,12 @@ void BehaviorSleeping::TransitionToBoutOfStirring()
 {
   SetDebugStateName("inBout");
 
+  // if its night time we should go to sleep and not snore.
+
+  if (GetBEI().GetSleepTracker().IsNightTime()) {
+    TransitionToSleeping();
+  }
+
   _dVars.animIsPlaying = false;
 
   if( _dVars.numRemainingInBout-- >= 0 ) {

@@ -33,7 +33,6 @@ namespace Vector {
 CONSOLE_VAR_RANGED(int, kSleepTracker_moning_hour, CONSOLE_GROUP, 7, 0, 23);
 CONSOLE_VAR_RANGED(int, kSleepTracker_moning_minute, CONSOLE_GROUP, 0, 0, 59);
 
-// NOTE: Because of a lazy developer, night time must be before midnight
 CONSOLE_VAR_RANGED(int, kSleepTracker_night_hour, CONSOLE_GROUP, 21, 0, 23);
 CONSOLE_VAR_RANGED(int, kSleepTracker_night_minute, CONSOLE_GROUP, 0, 0, 59);
 
@@ -162,13 +161,28 @@ bool SleepTracker::IsNightTime() const
   const float morningDecimalHours = kSleepTracker_moning_hour + kSleepTracker_moning_minute / 60.0f;
   const float nightDecimalHours = kSleepTracker_night_hour + kSleepTracker_night_minute / 60.0f;
 
-  DEV_ASSERT(morningDecimalHours < nightDecimalHours, "SleepTracker.MorningMustBeBeforeNight");
-
-  if( Util::InRange( currDecimalHours, morningDecimalHours, nightDecimalHours ) ) {
-    return false;
+  // Night time spans from nightDecimalHours to morningDecimalHours (wrapping around midnight)
+  // Daytime spans from morningDecimalHours to nightDecimalHours
+  if( nightDecimalHours > morningDecimalHours ) {
+    // Normal case: night time is after morning (e.g., morning=7:00, night=21:00)
+    // Daytime: 7:00 to 21:00 (exclusive of 21:00), Night time: 21:00 to 7:00 (inclusive)
+    if( currDecimalHours >= morningDecimalHours && currDecimalHours < nightDecimalHours ) {
+      return false; // daytime
+    }
+    else {
+      return true; // night time
+    }
   }
   else {
-    return true;
+    // Edge case: night time is at or before morning (e.g., night=0:00, morning=7:00)
+    // This means night time goes from midnight (0:00) to morning, and daytime wraps around
+    // Daytime: morning to night (wrapping), Night time: night to morning
+    if( currDecimalHours >= morningDecimalHours || currDecimalHours < nightDecimalHours ) {
+      return false; // daytime
+    }
+    else {
+      return true; // night time
+    }
   }
 }
 
